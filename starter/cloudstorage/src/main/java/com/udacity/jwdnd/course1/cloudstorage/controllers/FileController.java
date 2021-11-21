@@ -63,7 +63,7 @@ public class FileController {
 
     @GetMapping(value = "/delete/{fileName}")
     public String deleteFile(
-            Authentication authentication, @PathVariable String fileName, @ModelAttribute("newFile") FileForm newFile, Model model) {
+            Authentication authentication, @PathVariable String fileName, Model model) {
         fileService.deleteFile(fileName);
         model.addAttribute("result", "success");
         return "result";
