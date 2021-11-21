@@ -34,10 +34,10 @@ public class HomeController {
 
         System.out.println("inside homeView");
         Integer userId = getUserId(authentication);
-        Credential[] list = {new Credential(1,"www.","useername","key","pass",1)};
+        model.addAttribute("files", this.fileService.getFiles(userId));
         model.addAttribute("notes", noteService.getNotes(userId));
         model.addAttribute("credentials", credentialService.getCredentials(userId));
-        //model.addAttribute("encryptionService", encryptionService);
+        model.addAttribute("encryptionService", encryptionService);
         return "home";
     }
 

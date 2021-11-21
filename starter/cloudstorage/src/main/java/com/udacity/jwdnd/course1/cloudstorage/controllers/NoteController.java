@@ -32,11 +32,9 @@ public class NoteController {
     @PostMapping("/post")
     public String addNote(
             Authentication authentication, @ModelAttribute("newNote") NoteForm newNote, Model model) {
-        System.out.println("inside note controller post");
 
         Integer userId = getUserId(authentication);
         Integer noteId = newNote.getNoteId();
-        System.out.println("inside note controller post: note id = " + noteId);
         if (noteId == null) {
             noteService.addNote(new Note(null,newNote.getNoteTitle(),newNote.getNoteDescription(),userId));
         } else {
