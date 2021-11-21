@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage.controllers;
 
+import com.udacity.jwdnd.course1.cloudstorage.models.Credential;
 import com.udacity.jwdnd.course1.cloudstorage.models.User;
 import com.udacity.jwdnd.course1.cloudstorage.services.*;
 import org.springframework.security.core.Authentication;
@@ -33,10 +34,9 @@ public class HomeController {
 
         System.out.println("inside homeView");
         Integer userId = getUserId(authentication);
-        System.out.println("user id: "+userId);
-        //model.addAttribute("files", this.fileService.getFileListings(userId));
+        Credential[] list = {new Credential(1,"www.","useername","key","pass",1)};
         model.addAttribute("notes", noteService.getNotes(userId));
-        //model.addAttribute("credentials", credentialService.getCredentialListings(userId));
+        model.addAttribute("credentials", credentialService.getCredentials(userId));
         //model.addAttribute("encryptionService", encryptionService);
         return "home";
     }
@@ -45,9 +45,10 @@ public class HomeController {
     private Integer getUserId(Authentication authentication) {
         String userName = authentication.getName();
         User user = userService.getUser(userName);
-        System.out.println("The user id"+user.toString());
         return user.getUserId();
     }
+
+
 
 }
 

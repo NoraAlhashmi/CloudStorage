@@ -42,7 +42,6 @@ public class NoteController {
         } else {
             noteService.updateNote(new Note(noteId,newNote.getNoteTitle(),newNote.getNoteDescription(),userId));
         }
-        model.addAttribute("notes", noteService.getNotes(userId));
         model.addAttribute("result", "success");
 
         return "result";
@@ -53,14 +52,12 @@ public class NoteController {
     public String deleteNote( @PathVariable Integer noteId,Model model) {
         noteService.deleteNote(noteId);
         model.addAttribute("result", "success");
-
         return "result";
     }
 
     private Integer getUserId(Authentication authentication) {
         String userName = authentication.getName();
         User user = userService.getUser(userName);
-        System.out.println("The user id"+user.toString());
         return user.getUserId();
     }
 
