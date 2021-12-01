@@ -11,9 +11,9 @@ import org.springframework.boot.web.server.LocalServerPort;
 class CloudStorageApplicationTests {
 
 	@LocalServerPort
-	private int port;
+	public int port;
 
-	private WebDriver driver;
+	public static WebDriver driver;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -24,6 +24,7 @@ class CloudStorageApplicationTests {
 	public void beforeEach() {
 		this.driver = new ChromeDriver();
 	}
+
 
 	@AfterEach
 	public void afterEach() {
@@ -37,5 +38,25 @@ class CloudStorageApplicationTests {
 		driver.get("http://localhost:" + this.port + "/login");
 		Assertions.assertEquals("Login", driver.getTitle());
 	}
+
+
+
+	protected HomePage signUpAndLogin() {
+		driver.get("http://localhost:" + this.port + "/signup");
+		SignupPage signupPage = new SignupPage(driver);
+		signupPage.setFirstName("Nora");
+		signupPage.setLastName("Alhashmi");
+		signupPage.setUserName("Nora");
+		signupPage.setPassword("123456");
+		signupPage.signUp();
+		driver.get("http://localhost:" + this.port + "/login");
+		LoginPage loginPage = new LoginPage(driver);
+		loginPage.setUserName("Nora");
+		loginPage.setPassword("123456");
+		loginPage.login();
+
+		return new HomePage(driver);
+	}
+
 
 }
