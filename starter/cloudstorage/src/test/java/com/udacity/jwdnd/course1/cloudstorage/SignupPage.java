@@ -1,7 +1,5 @@
 package com.udacity.jwdnd.course1.cloudstorage;
 
-
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -23,30 +21,28 @@ public class SignupPage {
     @FindBy(id = "submit-button")
     private WebElement submitButton;
 
-    private final JavascriptExecutor js;
 
     public SignupPage(WebDriver driver) {
         PageFactory.initElements(driver, this);
-        js = (JavascriptExecutor) driver;
     }
 
     public void setFirstName(String firstName) {
-        js.executeScript("arguments[0].value='"+ firstName +"';", inputFirstName);
+        inputFirstName.sendKeys(firstName);
     }
 
     public void setLastName(String lastName) {
-        js.executeScript("arguments[0].value='"+ lastName +"';", inputLastName);
+        inputLastName.sendKeys(lastName);
     }
 
     public void setUserName(String userName) {
-        js.executeScript("arguments[0].value='"+ userName +"';", inputUserName);
+        inputUserName.sendKeys(userName);
     }
 
     public void setPassword(String password) {
-        js.executeScript("arguments[0].value='"+ password +"';", inputPassword);
+        inputPassword.sendKeys(password);
     }
 
     public void signUp() {
-        js.executeScript("arguments[0].click();", submitButton);
+        submitButton.click();
     }
 }

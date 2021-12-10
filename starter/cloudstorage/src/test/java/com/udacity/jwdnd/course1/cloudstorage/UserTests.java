@@ -9,7 +9,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 
 import java.util.concurrent.TimeUnit;
 
-
+//Write Tests for User Signup, Login, and Unauthorized Access Restrictions
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserTests {
 
@@ -35,7 +35,7 @@ class UserTests {
         }
     }
 
-
+    //Write a test that verifies that an unauthorized user can only access the login and signup pages
     @Test
     public void testPageAccess() {
         driver.get("http://localhost:" + this.port + "/login");
@@ -49,12 +49,10 @@ class UserTests {
     }
 
 
-
+    //Write a test that signs up a new user, logs in, verifies that the home page is accessible, logs out, and verifies that the home page is no longer accessible
     @Test
-    public void testUsers() {
+    public void TestAccount() {
         driver.get("http://localhost:" + this.port + "/signup");
-        Assertions.assertEquals("Sign Up", driver.getTitle());
-
         SignupPage signupPage = new SignupPage(driver);
         signupPage.setFirstName("Nora");
         signupPage.setLastName("Alhashmi");
@@ -63,18 +61,19 @@ class UserTests {
         signupPage.signUp();
 
         driver.get("http://localhost:" + this.port + "/login");
-        Assertions.assertEquals("Login", driver.getTitle());
-
         LoginPage loginPage = new LoginPage(driver);
         loginPage.setUserName("nora");
         loginPage.setPassword("123456");
         loginPage.login();
 
+        //Next line verifies that signs up a new user, logs in, verifies that the home page is accessible
+        Assertions.assertEquals("Home", driver.getTitle());
+
+
         HomePage homePage = new HomePage(driver);
         homePage.logout();
-
         driver.get("http://localhost:" + this.port + "/home");
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        //Next line verifies that the home page is no longer accessible
         Assertions.assertEquals("Login", driver.getTitle());
     }
 }

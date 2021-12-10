@@ -16,22 +16,20 @@ public class LoginPage {
     @FindBy(id = "submit-button")
     private WebElement submitButton;
 
-    private final JavascriptExecutor js;
 
     public LoginPage(WebDriver driver) {
         PageFactory.initElements(driver, this);
-        js = (JavascriptExecutor) driver;
     }
 
     public void setUserName(String userName) {
-        js.executeScript("arguments[0].value='"+ userName +"';", inputUserName);
+        inputUserName.sendKeys(userName);
     }
 
     public void setPassword(String password) {
-        js.executeScript("arguments[0].value='"+ password +"';", inputPassword);
+        inputPassword.sendKeys(password);
     }
 
     public void login() {
-        js.executeScript("arguments[0].click();", submitButton);
+        submitButton.click();
     }
 }

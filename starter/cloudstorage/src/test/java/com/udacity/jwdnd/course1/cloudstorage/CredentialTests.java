@@ -18,84 +18,119 @@ class CredentialTests extends CloudStorageApplicationTests {
     public static final String TWITTER_PASSWORD = "12345";
 
 
+    //Write a test that creates a set of credentials, verifies that they are displayed, and verifies that the displayed password is encrypted.
 
     @Test
-    public void testCredentialCreation() {
-        HomePage homePage = signUpAndLogin();
-        createAndVerifyCredential(GOOGLE_URL, GOOGLE_USERNAME, GOOGLE_PASSWORD, homePage);
-        homePage.deleteCredential();
-        ResultPage resultPage = new ResultPage(driver);
-        resultPage.clickOk();
-        homePage.logout();
-    }
-
-    private void createAndVerifyCredential(String url, String username, String password, HomePage homePage) {
-        createCredential(url, username, password, homePage);
-        homePage.navToCredentialsTab();
-        Credential credential = homePage.getFirstCredential();
-        Assertions.assertEquals(url, credential.getUrl());
-        Assertions.assertEquals(username, credential.getUsername());
-        Assertions.assertNotEquals(password, credential.getPassword());
-    }
-
-    private void createCredential(String url, String username, String password, HomePage homePage) {
+    public void testAddCredential() {
+        HomePage homePage = goToHome();
         homePage.navToCredentialsTab();
         homePage.addNewCredential();
-        setCredentialFields(url, username, password, homePage);
+        homePage.setCredentialUrl("www.google.com");
+        homePage.setCredentialUsername("noragoogle");
+        homePage.setCredentialPassword("123");
         homePage.saveCredentialChanges();
         ResultPage resultPage = new ResultPage(driver);
         resultPage.clickOk();
         homePage.navToCredentialsTab();
+
+        Credential credential = homePage.getFirstCredential();
+        //Next 2 lines verify that the shown credential details matches the user input
+        Assertions.assertEquals("www.google.com", credential.getUrl());
+        Assertions.assertEquals("noragoogle", credential.getUsername());
+        //Next line verifies that the password is encrypted
+        Assertions.assertNotEquals("123", credential.getPassword());
+
+        homePage.deleteCredential();
+        resultPage.clickOk();
+
+        homePage.addNewCredential();
+        homePage.setCredentialUrl("www.twitter.com");
+        homePage.setCredentialUsername("noratwitter");
+        homePage.setCredentialPassword("12345");
+        homePage.saveCredentialChanges();
+        resultPage.clickOk();
+        homePage.navToCredentialsTab();
+
+        Credential credential2 = homePage.getFirstCredential();
+        //Next 2 lines verify that the shown credential details matches the user input
+        Assertions.assertEquals("www.twitter.com", credential2.getUrl());
+        Assertions.assertEquals("noratwitter", credential2.getUsername());
+        //Next line verifies that the password is encrypted
+        Assertions.assertNotEquals("12345", credential2.getPassword());
+
+        homePage.deleteCredential();
+        resultPage.clickOk();
+
     }
 
-    private void setCredentialFields(String url, String username, String password, HomePage homePage) {
-        homePage.setCredentialUrl(url);
-        homePage.setCredentialUsername(username);
-        homePage.setCredentialPassword(password);
-    }
 
-
-
+    //Write a test that views an existing set of credentials, verifies that the viewable password is unencrypted, edits the credentials, and verifies that the changes are displayed.
     @Test
-    public void testCredentialModification() {
-        HomePage homePage = signUpAndLogin();
-        createAndVerifyCredential(GOOGLE_URL, GOOGLE_USERNAME, GOOGLE_PASSWORD, homePage);
-        Credential originalCredential = homePage.getFirstCredential();
-        String firstEncryptedPassword = originalCredential.getPassword();
+    public void testEditCredential() {
+        HomePage homePage = goToHome();
+
+        homePage.navToCredentialsTab();
+        homePage.addNewCredential();
+        homePage.setCredentialUrl("www.google.com");
+        homePage.setCredentialUsername("noragoogle");
+        homePage.setCredentialPassword("123");
+        homePage.saveCredentialChanges();
+        ResultPage resultPage = new ResultPage(driver);
+        resultPage.clickOk();
+        homePage.navToCredentialsTab();
+        Credential credential = homePage.getFirstCredential();
+
+        //Next line verifies that the password is encrypted
+        Assertions.assertNotEquals("123", credential.getPassword());
+
         homePage.editCredential();
-        String newUrl = TWITTER_URL;
-        String newCredentialUsername = TWITTER_USERNAME;
-        String newPassword = TWITTER_PASSWORD;
-        setCredentialFields(newUrl, newCredentialUsername, newPassword, homePage);
+
+        homePage.setCredentialUrl("www.twitter.com");
+        homePage.setCredentialUsername("noratwitter");
+        homePage.setCredentialPassword("12345");
+        homePage.saveCredentialChanges();
+        resultPage.clickOk();
+        homePage.navToCredentialsTab();
+        Credential editedCredential = homePage.getFirstCredential();
+
+        //Next 2 lines verify that the edited credential details matches the user input
+        Assertions.assertEquals("www.twitter.com", editedCredential.getUrl());
+        Assertions.assertEquals("noratwitter", editedCredential.getUsername());
+
+        homePage.deleteCredential();
+        resultPage.clickOk();
+    }
+
+    //Write a test that deletes an existing set of credentials and verifies that the credentials are no longer displayed.
+    @Test
+    public void testDeleteCredential() {
+        HomePage homePage = goToHome();
+        homePage.navToCredentialsTab();
+        homePage.addNewCredential();
+        homePage.setCredentialUrl("www.google.com");
+        homePage.setCredentialUsername("noragoogle");
+        homePage.setCredentialPassword("123");
         homePage.saveCredentialChanges();
         ResultPage resultPage = new ResultPage(driver);
         resultPage.clickOk();
         homePage.navToCredentialsTab();
-        Credential modifiedCredential = homePage.getFirstCredential();
-        Assertions.assertEquals(newUrl, modifiedCredential.getUrl());
-        Assertions.assertEquals(newCredentialUsername, modifiedCredential.getUsername());
-        String modifiedCredentialPassword = modifiedCredential.getPassword();
-        Assertions.assertNotEquals(newPassword, modifiedCredentialPassword);
-        Assertions.assertNotEquals(firstEncryptedPassword, modifiedCredentialPassword);
-        homePage.deleteCredential();
+        homePage.addNewCredential();
+        homePage.setCredentialUrl("www.twitter.com");
+        homePage.setCredentialUsername("noratwitter");
+        homePage.setCredentialPassword("12345");
+        homePage.saveCredentialChanges();
         resultPage.clickOk();
-        homePage.logout();
-    }
+        homePage.navToCredentialsTab();
 
-
-    @Test
-    public void testDeletion() {
-        HomePage homePage = signUpAndLogin();
-        createCredential(GOOGLE_URL, GOOGLE_USERNAME, GOOGLE_PASSWORD, homePage);
-        createCredential(TWITTER_URL, TWITTER_USERNAME, TWITTER_PASSWORD, homePage);
-        Assertions.assertFalse(homePage.noCredentials(driver));
+        //Next line verifies that the table is not empty
+        Assertions.assertFalse(homePage.isCredentialsTableEmpty(driver));
         homePage.deleteCredential();
-        ResultPage resultPage = new ResultPage(driver);
         resultPage.clickOk();
         homePage.navToCredentialsTab();
         homePage.deleteCredential();
         resultPage.clickOk();
         homePage.navToCredentialsTab();
-        Assertions.assertTrue(homePage.noCredentials(driver));
+        //Next line verifies that the table is  empty
+        Assertions.assertTrue(homePage.isCredentialsTableEmpty(driver));
     }
 }

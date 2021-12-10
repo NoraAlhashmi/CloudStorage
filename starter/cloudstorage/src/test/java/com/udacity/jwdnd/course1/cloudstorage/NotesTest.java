@@ -7,72 +7,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class NotesTest extends CloudStorageApplicationTests {
-    /**
-     * Test that edits an existing note and verifies that the changes are displayed.
-     */
+
+    //Write a test that creates a note, and verifies it is displayed.
     @Test
-    public void testDelete() {
+    public void testAddNote() {
         String noteTitle = "My Note";
-        String noteDescription = "This is my note.";
-        HomePage homePage = signUpAndLogin();
-        createNote(noteTitle, noteDescription, homePage);
-        homePage.navToNotesTab();
-        homePage = new HomePage(driver);
-        Assertions.assertFalse(homePage.noNotes(driver));
-        deleteNote(homePage);
-        Assertions.assertTrue(homePage.noNotes(driver));
-    }
+        String noteDescription = "Note Description";
+        HomePage homePage = goToHome();
 
-    private void deleteNote(HomePage homePage) {
-        homePage.deleteNote();
-        ResultPage resultPage = new ResultPage(driver);
-        resultPage.clickOk();
-    }
-
-    /**
-     * Test that creates a note, and verifies it is displayed.
-     */
-    @Test
-    public void testCreateAndDisplay() {
-        String noteTitle = "My Note";
-        String noteDescription = "Delete Note Description";
-        HomePage homePage = signUpAndLogin();
-        createNote(noteTitle, noteDescription, homePage);
-        homePage.navToNotesTab();
-        homePage = new HomePage(driver);
-        Note note = homePage.getFirstNote();
-        Assertions.assertEquals(noteTitle, note.getNoteTitle());
-        Assertions.assertEquals(noteDescription, note.getNoteDescription());
-        deleteNote(homePage);
-        homePage.logout();
-    }
-
-    /**
-     * Test that edits an existing note and verifies that the changes are displayed.
-     */
-    @Test
-    public void testModify() {
-        String noteTitle = "My Note";
-        String noteDescription = "Edit Note Description";
-        HomePage homePage = signUpAndLogin();
-        createNote(noteTitle, noteDescription, homePage);
-        homePage.navToNotesTab();
-        homePage = new HomePage(driver);
-        homePage.editNote();
-        String modifiedNoteTitle = "Edited Note";
-        homePage.modifyNoteTitle(modifiedNoteTitle);
-        String modifiedNoteDescription = "This is my modified note description";
-        homePage.modifyNoteDescription(modifiedNoteDescription);
-        homePage.saveNoteChanges();
-        ResultPage resultPage = new ResultPage(driver);
-        resultPage.clickOk();
-        homePage.navToNotesTab();
-        Note note = homePage.getFirstNote();
-        Assertions.assertEquals(modifiedNoteTitle, note.getNoteTitle());
-        Assertions.assertEquals(modifiedNoteDescription, note.getNoteDescription());
-    }
-
-    private void createNote(String noteTitle, String noteDescription, HomePage homePage) {
         homePage.navToNotesTab();
         homePage.addNewNote();
         homePage.setNoteTitle(noteTitle);
@@ -80,6 +22,69 @@ public class NotesTest extends CloudStorageApplicationTests {
         homePage.saveNoteChanges();
         ResultPage resultPage = new ResultPage(driver);
         resultPage.clickOk();
+
         homePage.navToNotesTab();
+        homePage = new HomePage(driver);
+        Note note = homePage.getFirstNote();
+
+        //Next two lines verifies that the last added note details matches the test input
+        Assertions.assertEquals(noteTitle, note.getNoteTitle());
+        Assertions.assertEquals(noteDescription, note.getNoteDescription());
+
+        homePage.deleteNote();
+        resultPage.clickOk();
     }
+
+
+
+    //Write a test that edits an existing note and verifies that the changes are displayed.
+    @Test
+    public void testEditNote() {
+        HomePage homePage = goToHome();
+        homePage.navToNotesTab();
+        homePage.addNewNote();
+        homePage.setNoteTitle("My Note");
+        homePage.setNoteDescription("Note Description");
+        homePage.saveNoteChanges();
+        ResultPage resultPage = new ResultPage(driver);
+        resultPage.clickOk();
+        homePage.navToNotesTab();
+        homePage = new HomePage(driver);
+        homePage.editNote();
+        homePage.setNoteTitle("Edited Note");
+        homePage.setNoteDescription("Edited note description");
+        homePage.saveNoteChanges();
+        resultPage.clickOk();
+        homePage.navToNotesTab();
+        Note note = homePage.getFirstNote();
+
+        //Next two lines verifies that the edited note details matches the test input
+        Assertions.assertEquals("Edited Note", note.getNoteTitle());
+        Assertions.assertEquals("Edited note description", note.getNoteDescription());
+
+        homePage.deleteNote();
+        resultPage.clickOk();
+    }
+
+    //Write a test that deletes a note and verifies that the note is no longer displayed.
+    @Test
+    public void testDelete() {
+        HomePage homePage = goToHome();
+        homePage.navToNotesTab();
+        homePage.addNewNote();
+        homePage.setNoteTitle("My Note");
+        homePage.setNoteDescription("Note Description");
+        homePage.saveNoteChanges();
+        ResultPage resultPage = new ResultPage(driver);
+        resultPage.clickOk();
+        homePage.navToNotesTab();
+        homePage = new HomePage(driver);
+        homePage.deleteNote();
+        resultPage.clickOk();
+        //Next line verifies that there is notes
+        Assertions.assertTrue(homePage.isNoteTableEmpty(driver));
+    }
+
+
+
 }
